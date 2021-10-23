@@ -15,13 +15,23 @@ class Product {
 
     getprice():Int{ price * 119 / 100 };
 
-    toString():String {
-        type_name()
-            .concat("(")
-            .concat(name)
-            .concat(";")
-            .concat(new A2I.i2a(price))
-            .concat(")")
+    toString() : String {
+        let attr : String in {
+            -- Edibles use price in their toString; other products use model
+            case self of
+                e : Edible => attr <- new A2I.i2a(price);
+                l : Laptop => attr <- model;
+                r : Router => attr <- model;
+                o : Object => abort();
+            esac;
+
+            self.type_name()
+                .concat("(")
+                .concat(name)
+                .concat(";")
+                .concat(attr)
+                .concat(")");
+        }
     };
 };
 

@@ -151,6 +151,7 @@ class Node {
     setNext(nxt : Node) : SELF_TYPE {{ next <- nxt; self; }};
 };
 
+
 class LinkedList {
     head : Node; -- Head of list
 
@@ -177,19 +178,22 @@ class LinkedList {
     };
 
     stringOf(o : Object) : String {
-        ""
+        case o of
+            p : Product => p.toString();
+        esac
     };
 
     toString() : String {
-        let curr : Node <- head, result : String <- "" in {
+        let curr : Node <- head, result : String <- "[ " in {
             
             while not isvoid curr 
             loop {
-                result <- result.concat(stringOf(curr.getValue()));
+                result <- result.concat(stringOf(curr.getValue())).concat(", ");
                 curr <- curr.getNext();
             } pool;
 
-            result;
+            result <- result.substr(0, result.length() - 2); -- trim last comma and space added to the end of the string
+            result.concat(" ]");
         }
     };
 };
@@ -202,17 +206,19 @@ class Main inherits IO{
     nextLine : String;
 
 
-    initProduct(name : String, tokenizer : StringTokenizer) : Product {
-        let product : Product <- new Product, model : String, price : Int in
+    initProduct(product : Product, tokenizer : StringTokenizer) : Product {
+        let name : String, model : String, price : Int in
         {
+            name <- tokenizer.next();
             model <- tokenizer.next();
             price <- new A2I.a2i(tokenizer.next());
+
             product.init(name, model, price);
             product;
         }
     };
 
-    main():Object {
+    main():Object {{
         while looping loop
         {
 
@@ -224,24 +230,27 @@ class Main inherits IO{
                let tokenizer : StringTokenizer <- new StringTokenizer in {
                     tokenizer.init(nextLine);
 
-                    let name : String, product : Product in
+                    let thing : String, product : Product in
                     {
-                        name <- tokenizer.next();
+                        thing <- tokenizer.next();
 
-                        if      name = "Soda"   then product <- initProduct(name, tokenizer)
-                        else if name = "Coffee" then product <- initProduct(name, tokenizer)
-                        else if name = "Laptop" then product <- initProduct(name, tokenizer)
-                        else if name = "Router" then product <- initProduct(name, tokenizer)
+                        if      thing = "Soda"   then product <- new Soda
+                        else if thing = "Coffee" then product <- new Coffee
+                        else if thing = "Laptop" then product <- new Laptop
+                        else if thing = "Router" then product <- new Router
                         else {abort(); "";}
                         fi fi fi fi;
 
-                        list.add(product);
-                        out_string(product.toString().concat("\n"));
+                        list.add(initProduct(product, tokenizer));
                     };
                }
             fi;
-        } pool
-    };
+        } pool;
+        
+        out_string(list.toString());
+        nextLine <- in_string();
+        out_string("\naici\n");
+    }};
 };
 (*
    The class stringTokenizer provides an API for splitting Strings into tokens.
@@ -346,13 +355,23 @@ class Product {
 
     getprice():Int{ price * 119 / 100 };
 
-    toString():String {
-        type_name()
-            .concat("(")
-            .concat(name)
-            .concat(";")
-            .concat(new A2I.i2a(price))
-            .concat(")")
+    toString() : String {
+        let attr : String in {
+            -- Edibles use price in their toString; other products use model
+            case self of
+                e : Edible => attr <- new A2I.i2a(price);
+                l : Laptop => attr <- model;
+                r : Router => attr <- model;
+                o : Object => abort();
+            esac;
+
+            self.type_name()
+                .concat("(")
+                .concat(name)
+                .concat(";")
+                .concat(attr)
+                .concat(")");
+        }
     };
 };
 

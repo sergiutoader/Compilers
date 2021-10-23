@@ -42,6 +42,7 @@ class Node {
     setNext(nxt : Node) : SELF_TYPE {{ next <- nxt; self; }};
 };
 
+
 class LinkedList {
     head : Node; -- Head of list
 
@@ -68,19 +69,22 @@ class LinkedList {
     };
 
     stringOf(o : Object) : String {
-        ""
+        case o of
+            p : Product => p.toString();
+        esac
     };
 
     toString() : String {
-        let curr : Node <- head, result : String <- "" in {
+        let curr : Node <- head, result : String <- "[ " in {
             
             while not isvoid curr 
             loop {
-                result <- result.concat(stringOf(curr.getValue()));
+                result <- result.concat(stringOf(curr.getValue())).concat(", ");
                 curr <- curr.getNext();
             } pool;
 
-            result;
+            result <- result.substr(0, result.length() - 2); -- trim last comma and space added to the end of the string
+            result.concat(" ]\n");
         }
     };
 };

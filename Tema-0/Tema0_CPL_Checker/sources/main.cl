@@ -7,17 +7,19 @@ class Main inherits IO{
     nextLine : String;
 
 
-    initProduct(name : String, tokenizer : StringTokenizer) : Product {
-        let product : Product <- new Product, model : String, price : Int in
+    initProduct(product : Product, tokenizer : StringTokenizer) : Product {
+        let name : String, model : String, price : Int in
         {
+            name <- tokenizer.next();
             model <- tokenizer.next();
             price <- new A2I.a2i(tokenizer.next());
+
             product.init(name, model, price);
             product;
         }
     };
 
-    main():Object {
+    main():Object {{
         while looping loop
         {
 
@@ -29,22 +31,24 @@ class Main inherits IO{
                let tokenizer : StringTokenizer <- new StringTokenizer in {
                     tokenizer.init(nextLine);
 
-                    let name : String, product : Product in
+                    let thing : String, product : Product in
                     {
-                        name <- tokenizer.next();
+                        thing <- tokenizer.next();
 
-                        if      name = "Soda"   then product <- initProduct(name, tokenizer)
-                        else if name = "Coffee" then product <- initProduct(name, tokenizer)
-                        else if name = "Laptop" then product <- initProduct(name, tokenizer)
-                        else if name = "Router" then product <- initProduct(name, tokenizer)
+                        if      thing = "Soda"   then product <- new Soda
+                        else if thing = "Coffee" then product <- new Coffee
+                        else if thing = "Laptop" then product <- new Laptop
+                        else if thing = "Router" then product <- new Router
                         else {abort(); "";}
                         fi fi fi fi;
 
-                        list.add(product);
-                        out_string(product.toString().concat("\n"));
+                        list.add(initProduct(product, tokenizer));
                     };
                }
             fi;
-        } pool
-    };
+        } pool;
+        
+        out_string(list.toString());
+        nextLine <- in_string();
+    }};
 };
