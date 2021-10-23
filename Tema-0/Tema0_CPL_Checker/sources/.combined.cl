@@ -106,7 +106,6 @@ numbers are handled correctly.
     };
 
 };
-
 class List {
     list : LinkedList <- new LinkedList;
 
@@ -177,9 +176,15 @@ class LinkedList {
         }
     };
 
-    stringOf(o : Object) : String {
-        case o of
+    stringOf(object : Object) : String {
+        case object of
             p : Product => p.toString();
+            r : Rank => r.toString();
+            i : Int => new Utils.intToString(i);
+            b : Bool => new Utils.boolToString(b);
+            s : String => "String(".concat(s).concat(")");
+            io : IO => "IO()";
+            o : Object => { abort(); ""; };
         esac
     };
 
@@ -193,30 +198,16 @@ class LinkedList {
             } pool;
 
             result <- result.substr(0, result.length() - 2); -- trim last comma and space added to the end of the string
-            result.concat(" ]");
+            result.concat(" ]\n");
         }
     };
 };
-
 class Main inherits IO{
     -- lists : List;
 
     list : List <- new List;
     looping : Bool <- true;
     nextLine : String;
-
-
-    initProduct(product : Product, tokenizer : StringTokenizer) : Product {
-        let name : String, model : String, price : Int in
-        {
-            name <- tokenizer.next();
-            model <- tokenizer.next();
-            price <- new A2I.a2i(tokenizer.next());
-
-            product.init(name, model, price);
-            product;
-        }
-    };
 
     main():Object {{
         while looping loop
@@ -230,26 +221,57 @@ class Main inherits IO{
                let tokenizer : StringTokenizer <- new StringTokenizer in {
                     tokenizer.init(nextLine);
 
-                    let thing : String, product : Product in
+                    let objectClass : String, object : Object in
                     {
-                        thing <- tokenizer.next();
+                        objectClass <- tokenizer.next();
 
-                        if      thing = "Soda"   then product <- new Soda
-                        else if thing = "Coffee" then product <- new Coffee
-                        else if thing = "Laptop" then product <- new Laptop
-                        else if thing = "Router" then product <- new Router
-                        else {abort(); "";}
-                        fi fi fi fi;
+                        if      objectClass = "Soda"   then object <- new Soda
+                        else if objectClass = "Coffee" then object <- new Coffee
+                        else if objectClass = "Laptop" then object <- new Laptop
+                        else if objectClass = "Router" then object <- new Router
+                        else if objectClass = "Private" then object <- new Private
+                        else if objectClass = "Corporal" then object <- new Corporal
+                        else if objectClass = "Sergent" then object <- new Sergent
+                        else if objectClass = "Officer" then object <- new Officer
+                        else if objectClass = "Int" then object <- new Int
+                        else if objectClass = "Bool" then object <- new Bool
+                        else if objectClass = "String" then object <- new String
+                        else if objectClass = "IO" then object <- new IO
+                        else abort()
+                        fi fi fi fi fi fi fi fi fi fi fi fi;
 
-                        list.add(initProduct(product, tokenizer));
+                        list.add(new Utils.initObject(object, tokenizer));
                     };
                }
             fi;
         } pool;
-        
-        out_string(list.toString());
-        nextLine <- in_string();
-        out_string("\naici\n");
+
+        looping <- true;
+
+        while looping loop
+        {
+            nextLine <- in_string();
+            if nextLine = "" then
+                looping <- false
+            else
+                let tokenizer : StringTokenizer <- new StringTokenizer in {
+                    tokenizer.init(nextLine);
+
+                    let command : String in {
+                        command <- tokenizer.next();
+                        if command = "print" then
+                        {
+                            -- TODO - check if command has argument, only show the requested list
+                            out_string(list.toString());
+                        } else
+                            -- TODO - implement other commands
+                            ""
+                        fi;
+                    };
+                }
+            fi;
+
+        } pool;
     }};
 };
 (*
@@ -356,22 +378,12 @@ class Product {
     getprice():Int{ price * 119 / 100 };
 
     toString() : String {
-        let attr : String in {
-            -- Edibles use price in their toString; other products use model
-            case self of
-                e : Edible => attr <- new A2I.i2a(price);
-                l : Laptop => attr <- model;
-                r : Router => attr <- model;
-                o : Object => abort();
-            esac;
-
-            self.type_name()
-                .concat("(")
-                .concat(name)
-                .concat(";")
-                .concat(attr)
-                .concat(")");
-        }
+        self.type_name()
+            .concat("(")
+            .concat(name)
+            .concat(";")
+            .concat(model)
+            .concat(")")
     };
 };
 
@@ -403,13 +415,16 @@ class Router inherits Product {};
 class Rank {
     name : String;
 
-    init(n : String):String {
-        name <- n
-    };
+    init(n : String):SELF_TYPE {{
+        name <- n;
+        self;
+    }};
 
     toString():String {
-        -- Hint: what are the default methods of Object?
-        "TODO: implement me"
+        self.type_name()
+            .concat("(")
+            .concat(name)
+            .concat(")")
     };
 };
 
@@ -430,3 +445,68 @@ class Filter {
 };
 
 (* TODO: implement specified comparators and filters*)
+
+
+class Utils {
+
+    initObject(object : Object, tokenizer : StringTokenizer) : Object {
+        case object of
+            product : Product => initProduct(product, tokenizer);
+            rank : Rank => initRank(rank, tokenizer);
+            i : Int => initInt(tokenizer);
+            b : Bool => initBool(tokenizer);
+            s : String => initString(tokenizer);
+            io : IO => io;
+            o : Object => abort();
+        esac
+    };
+
+    initProduct(product : Product, tokenizer : StringTokenizer) : Product {
+        let name : String, model : String, price : Int in
+        {
+            name <- tokenizer.next();
+            model <- tokenizer.next();
+            price <- new A2I.a2i(tokenizer.next());
+
+            product.init(name, model, price);
+        }
+    };
+
+    initRank(rank : Rank, tokenizer : StringTokenizer) : Rank {
+        let name : String in
+        {
+            name <- tokenizer.next();
+            rank.init(name);
+        }
+    };
+
+    initInt(tokenizer : StringTokenizer) : Int {
+        new A2I.a2i(tokenizer.next())
+    };
+
+    initBool(tokenizer : StringTokenizer) : Bool {
+        tokenizer.next() = "true"
+    };
+
+    initString(tokenizer : StringTokenizer) : String {
+        tokenizer.next()
+    };
+
+    intToString(i : Int) : String {
+        "Int(".concat(new A2I.i2a(i)).concat(")")
+    };
+
+    boolToString(b : Bool) : String {
+        let result : String in {
+            result <- "Bool(";
+
+            if b then
+                result.concat("true")
+            else
+                result.concat("false")
+            fi;
+
+            result.concat(")");        
+        }
+    };
+};

@@ -6,19 +6,6 @@ class Main inherits IO{
     looping : Bool <- true;
     nextLine : String;
 
-
-    initProduct(product : Product, tokenizer : StringTokenizer) : Product {
-        let name : String, model : String, price : Int in
-        {
-            name <- tokenizer.next();
-            model <- tokenizer.next();
-            price <- new A2I.a2i(tokenizer.next());
-
-            product.init(name, model, price);
-            product;
-        }
-    };
-
     main():Object {{
         while looping loop
         {
@@ -31,24 +18,56 @@ class Main inherits IO{
                let tokenizer : StringTokenizer <- new StringTokenizer in {
                     tokenizer.init(nextLine);
 
-                    let thing : String, product : Product in
+                    let objectClass : String, object : Object in
                     {
-                        thing <- tokenizer.next();
+                        objectClass <- tokenizer.next();
 
-                        if      thing = "Soda"   then product <- new Soda
-                        else if thing = "Coffee" then product <- new Coffee
-                        else if thing = "Laptop" then product <- new Laptop
-                        else if thing = "Router" then product <- new Router
-                        else {abort(); "";}
-                        fi fi fi fi;
+                        if      objectClass = "Soda"   then object <- new Soda
+                        else if objectClass = "Coffee" then object <- new Coffee
+                        else if objectClass = "Laptop" then object <- new Laptop
+                        else if objectClass = "Router" then object <- new Router
+                        else if objectClass = "Private" then object <- new Private
+                        else if objectClass = "Corporal" then object <- new Corporal
+                        else if objectClass = "Sergent" then object <- new Sergent
+                        else if objectClass = "Officer" then object <- new Officer
+                        else if objectClass = "Int" then object <- new Int
+                        else if objectClass = "Bool" then object <- new Bool
+                        else if objectClass = "String" then object <- new String
+                        else if objectClass = "IO" then object <- new IO
+                        else abort()
+                        fi fi fi fi fi fi fi fi fi fi fi fi;
 
-                        list.add(initProduct(product, tokenizer));
+                        list.add(new Utils.initObject(object, tokenizer));
                     };
                }
             fi;
         } pool;
-        
-        out_string(list.toString());
-        nextLine <- in_string();
+
+        looping <- true;
+
+        while looping loop
+        {
+            nextLine <- in_string();
+            if nextLine = "" then
+                looping <- false
+            else
+                let tokenizer : StringTokenizer <- new StringTokenizer in {
+                    tokenizer.init(nextLine);
+
+                    let command : String in {
+                        command <- tokenizer.next();
+                        if command = "print" then
+                        {
+                            -- TODO - check if command has argument, only show the requested list
+                            out_string(list.toString());
+                        } else
+                            -- TODO - implement other commands
+                            ""
+                        fi;
+                    };
+                }
+            fi;
+
+        } pool;
     }};
 };

@@ -16,22 +16,12 @@ class Product {
     getprice():Int{ price * 119 / 100 };
 
     toString() : String {
-        let attr : String in {
-            -- Edibles use price in their toString; other products use model
-            case self of
-                e : Edible => attr <- new A2I.i2a(price);
-                l : Laptop => attr <- model;
-                r : Router => attr <- model;
-                o : Object => abort();
-            esac;
-
-            self.type_name()
-                .concat("(")
-                .concat(name)
-                .concat(";")
-                .concat(attr)
-                .concat(")");
-        }
+        self.type_name()
+            .concat("(")
+            .concat(name)
+            .concat(";")
+            .concat(model)
+            .concat(")")
     };
 };
 
@@ -63,13 +53,16 @@ class Router inherits Product {};
 class Rank {
     name : String;
 
-    init(n : String):String {
-        name <- n
-    };
+    init(n : String):SELF_TYPE {{
+        name <- n;
+        self;
+    }};
 
     toString():String {
-        -- Hint: what are the default methods of Object?
-        "TODO: implement me"
+        self.type_name()
+            .concat("(")
+            .concat(name)
+            .concat(")")
     };
 };
 

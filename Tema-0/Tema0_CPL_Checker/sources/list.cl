@@ -68,9 +68,15 @@ class LinkedList {
         }
     };
 
-    stringOf(o : Object) : String {
-        case o of
+    stringOf(object : Object) : String {
+        case object of
             p : Product => p.toString();
+            r : Rank => r.toString();
+            i : Int => new Utils.intToString(i);
+            b : Bool => new Utils.boolToString(b);
+            s : String => "String(".concat(s).concat(")");
+            io : IO => "IO()";
+            o : Object => { abort(); ""; };
         esac
     };
 
