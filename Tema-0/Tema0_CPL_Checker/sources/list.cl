@@ -8,17 +8,18 @@ class List {
         }
     };
 
-    getList() : LinkedList {
-        list
+    delete(index : Int) : Object {
+        list.delete(index)
     };
 
     toString():String {
         list.toString()
     };
 
-    merge(other : List):SELF_TYPE {
-        self (* TODO *)
-    };
+    merge(other : List):SELF_TYPE {{
+        list <- list.merge(other.getList());
+        self;
+    }};
 
     filterBy():SELF_TYPE {
         self (* TODO *)
@@ -26,6 +27,10 @@ class List {
 
     sortBy():SELF_TYPE {
         self (* TODO *)
+    };
+
+    getList() : LinkedList {
+        list
     };
 };
 
@@ -49,8 +54,9 @@ class Node {
 
 class LinkedList {
     head : Node; -- Head of list
+    size : Int; -- number of elements in list
 
-    cons(value : Object) : LinkedList {
+    cons(value : Object) : SELF_TYPE {
         let newNode : Node <- new Node, last : Node in
         {
             newNode.init(value);
@@ -68,7 +74,68 @@ class LinkedList {
             }
             fi;
 
+            size <- size + 1;
+
             self;
+        }
+    };
+
+    -- assuming list is not empty
+    delete(index : Int) : Object {
+        let prev : Node, curr : Node <- head, looping : Bool <- true in {
+
+            if index = 1 then
+                head <- head.getNext()
+            else
+                while looping loop
+                    if isvoid curr then
+                        looping <- false
+                    else
+                        if index = 1 then {
+                            prev.setNext(curr.getNext());
+                            looping <- false;
+                        } else {
+                            prev <- curr;
+                            curr <- curr.getNext();
+                            index <- index - 1;
+                        } fi
+                    fi
+                pool
+            fi;
+
+            size <- size - 1;
+        }
+    };
+
+    merge(other : LinkedList) : SELF_TYPE {
+        let curr : Node <- head in {
+            while not isvoid curr.getNext() loop
+                curr <- curr.getNext()
+            pool;
+
+            curr.setNext(other.getHead());
+
+            self;
+        }
+    };
+
+    get(index : Int) : Object {
+        let curr : Node <- head, result : Object in {
+            
+            while 1 < index loop
+                if isvoid curr then
+                    abort()
+                else {
+                     index <- index - 1;
+                     curr <- curr.getNext(); 
+                } fi
+            pool;
+
+            if isvoid curr then
+                abort()
+            else
+                curr.getValue()
+            fi;
         }
     };
 
@@ -98,26 +165,6 @@ class LinkedList {
         }
     };
 
-    get(index : Int) : Object {
-        let curr : Node <- head, result : Object in {
-            
-            while 1 < index loop
-                if isvoid curr then
-                    abort()
-                else {
-                     index <- index - 1;
-                     curr <- curr.getNext(); 
-                } fi
-            pool;
-
-            if isvoid curr then
-                abort()
-            else
-                curr.getValue()
-            fi;
-        }
-    };
-
     getHead() : Node { head };
     setHead(n : Node) : Node {{ head <- n; n; }};
 
@@ -126,4 +173,6 @@ class LinkedList {
 
     getNext() : Node { head.getNext() };
     setNext(nxt : Node) : SELF_TYPE {{ head.setNext(nxt); self; }};
+
+    getSize() : Int { size };
 };

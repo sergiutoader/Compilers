@@ -81,24 +81,40 @@ class Main inherits IO{
                                     esac;
 
                                 } else
-                                    while not isvoid lists_aux.getHead() loop {
-                                        l <- lists_aux.getValue();
+                                    while index < lists_aux.getSize() loop {
                                         index <- index + 1;
+                                        l <- lists_aux.get(index);
                                         case l of
                                             lst : List => {
                                                     out_string(new A2I.i2a(index).concat(": ").concat(lst.getList().toString()));        
                                             };
                                         esac;
-
-                                        lists_aux.setHead(lists_aux.getNext());
                                     } pool
                                 fi;
+                            }
+                        else if command = "merge" then
+                            let index1 : Int, index2 : Int, list1 : Object, list2 : Object in {
+                                index1 <- new A2I.a2i(tokenizer.next());
+                                index2 <- new A2I.a2i(tokenizer.next());
+
+                                -- assuming index2 is always larger than index1
+                                list2 <- lists.getList().get(index2);
+                                list1 <- lists.getList().get(index1);
+
+                                case list1 of
+                                    l1 : List =>
+                                        case list2 of
+                                            l2 : List => lists.add(l1.merge(l2));                
+                                        esac;
+                                esac;
+
+                                lists.delete(index2);
+                                lists.delete(index1);
                             }
                         else
                          -- TODO - implement other commands
                             ""
-
-                        fi;
+                        fi fi;
                     };
                 }
             fi fi;

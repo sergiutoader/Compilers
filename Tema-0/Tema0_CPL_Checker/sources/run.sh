@@ -14,7 +14,6 @@ if [ $# -lt 1 ]; then
 fi
 
 # this may seem like a hack. That's because it is.
-ls *.cl
 cat $SOURCES > $TMP_SRC
 cat $@ - | $INTERP $TMP_SRC | tee $LOGFILE
 
