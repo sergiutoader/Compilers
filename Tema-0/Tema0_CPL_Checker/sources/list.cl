@@ -8,6 +8,10 @@ class List {
         }
     };
 
+    getList() : LinkedList {
+        list
+    };
+
     toString():String {
         list.toString()
     };
@@ -93,4 +97,33 @@ class LinkedList {
             result.concat(" ]\n");
         }
     };
+
+    get(index : Int) : Object {
+        let curr : Node <- head, result : Object in {
+            
+            while 1 < index loop
+                if isvoid curr then
+                    abort()
+                else {
+                     index <- index - 1;
+                     curr <- curr.getNext(); 
+                } fi
+            pool;
+
+            if isvoid curr then
+                abort()
+            else
+                curr.getValue()
+            fi;
+        }
+    };
+
+    getHead() : Node { head };
+    setHead(n : Node) : Node {{ head <- n; n; }};
+
+    getValue() : Object { head.getValue() };
+    setValue(val : Object) : SELF_TYPE {{ head.setValue(val); self; }};
+
+    getNext() : Node { head.getNext() };
+    setNext(nxt : Node) : SELF_TYPE {{ head.setNext(nxt); self; }};
 };

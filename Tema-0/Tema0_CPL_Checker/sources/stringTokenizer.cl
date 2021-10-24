@@ -31,18 +31,17 @@ class StringTokenizer {
 
             if i < str.length() then
                str <- str.substr(i + 1, str.length() - i - 1)
-            else
-               str <- ""
+            else {
+               str <- "";
+               hasNext <- false;
+            }
             fi;
 
             aux_str;
          };
       }
       else
-      {
-         abort();
-         "";
-      }
+         ""
       fi
    };
 
@@ -59,21 +58,21 @@ class StringTokenizer {
 
          while looping loop {
 
-            if aux_str.substr(i, 1) = " " then
+            if aux_str = "" then
                looping <- false
-            else
-               if aux_str.substr(i, 1) = "\n" then
+            else if aux_str.substr(i, 1) = " " then
+               looping <- false
+            else if aux_str.substr(i, 1) = "\n" then
                   looping <- false
-               else "" -- Do nothing
-               fi
-            fi;
+            else "" -- Do nothing
+            fi fi fi;
 
 
             if looping then {
                i <- i + 1;
                looping <- (i < len);
-            } else "" -- Do nothing
-
+            } else
+               "" -- Do nothing
             fi;
          } pool;
 
@@ -82,5 +81,4 @@ class StringTokenizer {
          result;
       }
    };
-
 };

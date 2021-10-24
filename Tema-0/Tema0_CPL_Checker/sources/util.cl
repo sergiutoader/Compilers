@@ -64,9 +64,9 @@ class Utils {
             result <- "Bool(";
 
             if b then
-                result.concat("true")
+                result <- result.concat("true")
             else
-                result.concat("false")
+                result <- result.concat("false")
             fi;
 
             result.concat(")");        

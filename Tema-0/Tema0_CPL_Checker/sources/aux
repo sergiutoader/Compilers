@@ -240,15 +240,13 @@ class Main inherits IO{
 
     lists : List <- new List;
 
-    list : List;
-    looping : Bool;
+    list : List <- new List;
+    looping : Bool <- true;
     main_looping : Bool <- true;
     nextLine : String;
 
-    objectParsing() : Object {{
-        looping <- true;
-        list <- new List;
 
+    objectParsing() : Object {
         while looping loop
         {
 
@@ -283,15 +281,11 @@ class Main inherits IO{
                     };
                }
             fi;
-        } pool;
-
-        lists.add(list);
-    }};
+        } pool
+    };
 
 
-    commandParsing() : Object {{
-        looping <- true;
-
+    commandParsing() : Object {
         while looping loop
         {
             nextLine <- in_string();
@@ -339,13 +333,17 @@ class Main inherits IO{
                 }
             fi fi;
 
-        } pool;
-    }};
+        } pool
+    };
 
     main():Object {
         while main_looping loop
         {
             objectParsing();
+
+            lists.add(list);
+            looping <- true;
+
             commandParsing();
         } pool
     };
@@ -415,7 +413,7 @@ class StringTokenizer {
             else if aux_str.substr(i, 1) = " " then
                looping <- false
             else if aux_str.substr(i, 1) = "\n" then
-                  looping <- false
+                  looping <- false;
             else "" -- Do nothing
             fi fi fi;
 

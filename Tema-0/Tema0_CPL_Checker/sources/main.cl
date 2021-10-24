@@ -2,11 +2,17 @@
 class Main inherits IO{
     -- lists : List;
 
-    list : List <- new List;
-    looping : Bool <- true;
+    lists : List <- new List;
+
+    list : List;
+    looping : Bool;
+    main_looping : Bool <- true;
     nextLine : String;
 
-    main():Object {{
+    objectParsing() : Object {{
+        looping <- true;
+        list <- new List;
+
         while looping loop
         {
 
@@ -22,18 +28,18 @@ class Main inherits IO{
                     {
                         objectClass <- tokenizer.next();
 
-                        if      objectClass = "Soda"   then object <- new Soda
-                        else if objectClass = "Coffee" then object <- new Coffee
-                        else if objectClass = "Laptop" then object <- new Laptop
-                        else if objectClass = "Router" then object <- new Router
-                        else if objectClass = "Private" then object <- new Private
-                        else if objectClass = "Corporal" then object <- new Corporal
-                        else if objectClass = "Sergent" then object <- new Sergent
-                        else if objectClass = "Officer" then object <- new Officer
-                        else if objectClass = "Int" then object <- new Int
-                        else if objectClass = "Bool" then object <- new Bool
-                        else if objectClass = "String" then object <- new String
-                        else if objectClass = "IO" then object <- new IO
+                        if      objectClass = "Soda"        then object <- new Soda
+                        else if objectClass = "Coffee"      then object <- new Coffee
+                        else if objectClass = "Laptop"      then object <- new Laptop
+                        else if objectClass = "Router"      then object <- new Router
+                        else if objectClass = "Private"     then object <- new Private
+                        else if objectClass = "Corporal"    then object <- new Corporal
+                        else if objectClass = "Sergent"     then object <- new Sergent
+                        else if objectClass = "Officer"     then object <- new Officer
+                        else if objectClass = "Int"         then object <- new Int
+                        else if objectClass = "Bool"        then object <- new Bool
+                        else if objectClass = "String"      then object <- new String
+                        else if objectClass = "IO"          then object <- new IO
                         else abort()
                         fi fi fi fi fi fi fi fi fi fi fi fi;
 
@@ -43,12 +49,20 @@ class Main inherits IO{
             fi;
         } pool;
 
+        lists.add(list);
+    }};
+
+
+    commandParsing() : Object {{
         looping <- true;
 
         while looping loop
         {
             nextLine <- in_string();
-            if nextLine = "" then
+            if nextLine = "" then {
+                looping <- false;
+                main_looping <- false;
+            } else if nextLine = "load" then
                 looping <- false
             else
                 let tokenizer : StringTokenizer <- new StringTokenizer in {
@@ -57,17 +71,46 @@ class Main inherits IO{
                     let command : String in {
                         command <- tokenizer.next();
                         if command = "print" then
-                        {
-                            -- TODO - check if command has argument, only show the requested list
-                            out_string(list.toString());
-                        } else
-                            -- TODO - implement other commands
+                            let lists_aux : LinkedList <- lists.getList(), l : Object, index : Int in {
+                                if tokenizer.hasNext() then {
+                                    index <- new A2I.a2i(tokenizer.next());
+                                    l <- lists_aux.get(index);
+
+                                    case l of
+                                        lst : List => out_string(lst.getList().toString());
+                                    esac;
+
+                                } else
+                                    while not isvoid lists_aux.getHead() loop {
+                                        l <- lists_aux.getValue();
+                                        index <- index + 1;
+                                        case l of
+                                            lst : List => {
+                                                    out_string(new A2I.i2a(index).concat(": ").concat(lst.getList().toString()));        
+                                            };
+                                        esac;
+
+                                        lists_aux.setHead(lists_aux.getNext());
+                                    } pool
+                                fi;
+                            }
+                        else
+                         -- TODO - implement other commands
                             ""
+
                         fi;
                     };
                 }
-            fi;
+            fi fi;
 
         } pool;
     }};
+
+    main():Object {
+        while main_looping loop
+        {
+            objectParsing();
+            commandParsing();
+        } pool
+    };
 };
