@@ -129,9 +129,10 @@ class List {
         self;
     }};
 
-    filterBy():SELF_TYPE {
-        self (* TODO *)
-    };
+    filterBy(filterObj : Filter):SELF_TYPE {{
+        list.filterBy(filterObj);
+        self;
+    }};
 
     sortBy():SELF_TYPE {
         self (* TODO *)
@@ -183,6 +184,20 @@ class LinkedList {
             fi;
 
             size <- size + 1;
+
+            self;
+        }
+    };
+
+    filterBy(filterObj : Filter) : SELF_TYPE {
+        let index : Int in {
+            while index <= size loop
+                if not filterObj.filter(get(index)) then
+                    delete(index)
+                else
+                    index <- index + 1
+                fi 
+            pool;
 
             self;
         }
@@ -244,6 +259,19 @@ class LinkedList {
             else
                 curr.getValue()
             fi;
+        }
+    };
+
+    set(index : Int, value : Object) : SELF_TYPE {
+        let curr : Node <- head in {
+            while 1 < index loop {
+                index <- index - 1;
+                curr <- curr.getNext();
+            } pool;
+
+            curr.setValue(value);
+
+            self;
         }
     };
 
@@ -370,9 +398,7 @@ class Main inherits IO{
                                         index <- index + 1;
                                         l <- lists_aux.get(index);
                                         case l of
-                                            lst : List => {
-                                                    out_string(new A2I.i2a(index).concat(": ").concat(lst.getList().toString()));        
-                                            };
+                                            lst : List => out_string(new A2I.i2a(index).concat(": ").concat(lst.getList().toString()));
                                         esac;
                                     } pool
                                 fi;
@@ -396,10 +422,25 @@ class Main inherits IO{
                                 lists.delete(index2);
                                 lists.delete(index1);
                             }
+                        else if command = "filterBy" then
+                            let index : Int, filter_str : String, filter_obj : Filter, l_i : Object in {
+                                index <- new A2I.a2i(tokenizer.next());
+                                filter_str <- tokenizer.next();
+                                if filter_str = "ProductFilter" then filter_obj <- new ProductFilter
+                                else if filter_str = "RankFilter" then filter_obj <- new RankFilter
+                                else if filter_str = "SamePriceFilter" then filter_obj <- new SamePriceFilter
+                                else abort()
+                                fi fi fi;
+
+                                l_i <- lists.getList().get(index);
+                                case l_i of
+                                    list_i : List => list_i.filterBy(filter_obj);
+                                esac; 
+                            }
                         else
                          -- TODO - implement other commands
                             ""
-                        fi fi;
+                        fi fi fi;
                     };
                 }
             fi fi;
@@ -494,7 +535,6 @@ class StringTokenizer {
          } pool;
 
          result <- i;
-
          result;
       }
    };
@@ -585,6 +625,35 @@ class Filter {
 
 (* TODO: implement specified comparators and filters*)
 
+class ProductFilter inherits Filter {
+    filter (o : Object): Bool {
+        case o of
+            prod : Product => true;
+            obj : Object => false;
+        esac
+    };
+};
+
+class RankFilter inherits Filter {
+    filter (o : Object): Bool {
+        case o of
+            rank : Rank => true;
+            obj : Object => false;
+        esac
+    };
+};
+
+class SamePriceFilter inherits Filter {
+    filter (o : Object): Bool {
+        if new ProductFilter.filter(o) then
+            case o of
+                prod : Product => prod@Product.getprice() = prod.getprice();
+            esac
+        else
+            false
+        fi         
+    };
+};
 
 class Utils {
 

@@ -77,7 +77,6 @@ class StringTokenizer {
          } pool;
 
          result <- i;
-
          result;
       }
    };

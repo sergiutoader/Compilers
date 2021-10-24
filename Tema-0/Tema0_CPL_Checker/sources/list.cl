@@ -21,9 +21,10 @@ class List {
         self;
     }};
 
-    filterBy():SELF_TYPE {
-        self (* TODO *)
-    };
+    filterBy(filterObj : Filter):SELF_TYPE {{
+        list.filterBy(filterObj);
+        self;
+    }};
 
     sortBy():SELF_TYPE {
         self (* TODO *)
@@ -75,6 +76,20 @@ class LinkedList {
             fi;
 
             size <- size + 1;
+
+            self;
+        }
+    };
+
+    filterBy(filterObj : Filter) : SELF_TYPE {
+        let index : Int in {
+            while index <= size loop
+                if not filterObj.filter(get(index)) then
+                    delete(index)
+                else
+                    index <- index + 1
+                fi 
+            pool;
 
             self;
         }
@@ -138,6 +153,19 @@ class LinkedList {
             fi;
         }
     };
+
+    -- set(index : Int, value : Object) : SELF_TYPE {
+    --     let curr : Node <- head in {
+    --         while 1 < index loop {
+    --             index <- index - 1;
+    --             curr <- curr.getNext();
+    --         } pool;
+
+    --         curr.setValue(value);
+
+    --         self;
+    --     }
+    -- };
 
     stringOf(object : Object) : String {
         case object of

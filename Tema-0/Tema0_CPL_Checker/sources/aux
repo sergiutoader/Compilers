@@ -129,9 +129,10 @@ class List {
         self;
     }};
 
-    filterBy():SELF_TYPE {
-        self (* TODO *)
-    };
+    filterBy(filterObj : Filter):SELF_TYPE {{
+        list.filterBy(filterObj);
+        self;
+    }};
 
     sortBy():SELF_TYPE {
         self (* TODO *)
@@ -162,6 +163,7 @@ class Node {
 
 class LinkedList {
     head : Node; -- Head of list
+    size : Int; -- number of elements in list
 
     cons(value : Object) : SELF_TYPE {
         let newNode : Node <- new Node, last : Node in
@@ -181,6 +183,22 @@ class LinkedList {
             }
             fi;
 
+            size <- size + 1;
+
+            self;
+        }
+    };
+
+    filterBy(filterObj : Filter) : SELF_TYPE {
+        let index : Int in {
+            while index < size loop
+                if not filterObj.filter(get(index)) then
+                    delete(index)
+                else
+                    index <- index + 1
+                fi 
+            pool;
+
             self;
         }
     };
@@ -193,7 +211,7 @@ class LinkedList {
                 head <- head.getNext()
             else
                 while looping loop
-                    if not isvoid curr then
+                    if isvoid curr then
                         looping <- false
                     else
                         if index = 1 then {
@@ -208,7 +226,7 @@ class LinkedList {
                 pool
             fi;
 
-            curr.getValue();
+            size <- size - 1;
         }
     };
 
@@ -241,6 +259,19 @@ class LinkedList {
             else
                 curr.getValue()
             fi;
+        }
+    };
+
+    set(index : Int, value : Object) : SELF_TYPE {
+        let curr : Node <- head in {
+            while 1 < index loop
+                index <- index - 1;
+                curr <- curr.getNext();
+            pool;
+
+            curr.setValue(value);
+
+            self;
         }
     };
 
@@ -278,6 +309,8 @@ class LinkedList {
 
     getNext() : Node { head.getNext() };
     setNext(nxt : Node) : SELF_TYPE {{ head.setNext(nxt); self; }};
+
+    getSize() : Int { size };
 };
 class Main inherits IO{
     -- lists : List;
@@ -361,16 +394,12 @@ class Main inherits IO{
                                     esac;
 
                                 } else
-                                    while not isvoid lists_aux.getHead() loop {
-                                        l <- lists_aux.getValue();
+                                    while index < lists_aux.getSize() loop {
                                         index <- index + 1;
+                                        l <- lists_aux.get(index);
                                         case l of
-                                            lst : List => {
-                                                    out_string(new A2I.i2a(index).concat(": ").concat(lst.getList().toString()));        
-                                            };
+                                            lst : List => out_string(new A2I.i2a(index).concat(": ").concat(lst.getList().toString()));
                                         esac;
-
-                                        lists_aux.setHead(lists_aux.getNext());
                                     } pool
                                 fi;
                             }
@@ -380,8 +409,8 @@ class Main inherits IO{
                                 index2 <- new A2I.a2i(tokenizer.next());
 
                                 -- assuming index2 is always larger than index1
-                                list2 <- lists.delete(index2);
-                                list1 <- lists.delete(index1);
+                                list2 <- lists.getList().get(index2);
+                                list1 <- lists.getList().get(index1);
 
                                 case list1 of
                                     l1 : List =>
@@ -389,11 +418,29 @@ class Main inherits IO{
                                             l2 : List => lists.add(l1.merge(l2));                
                                         esac;
                                 esac;
+
+                                lists.delete(index2);
+                                lists.delete(index1);
+                            }
+                        else if command = "filter" then
+                            let index : Int, filter_str : String, filter_obj : Filter, l_i : Object in {
+                                index <- new A2I.a2i(tokenizer.next());
+                                filter_str <- tokenizer.next();
+                                if filter_str = "ProductFilter" then filter_obj <- new ProductFilter
+                                else if filter_str = "RankFilter" then filter_obj <- new RankFilter
+                                else if filter_str = "SamePriceFilter" then filter_obj <- new SamePriceFilter
+                                else abort()
+                                fi fi fi;
+
+                                l_i <- lists.getList().get(index);
+                                case l_i of
+                                    list_i : List => list_i.set(index, list_i.filterBy(filter_obj));
+                                esac; 
                             }
                         else
                          -- TODO - implement other commands
                             ""
-                        fi fi;
+                        fi fi fi;
                     };
                 }
             fi fi;
@@ -488,7 +535,6 @@ class StringTokenizer {
          } pool;
 
          result <- i;
-
          result;
       }
    };
@@ -579,6 +625,35 @@ class Filter {
 
 (* TODO: implement specified comparators and filters*)
 
+class ProductFilter inherits Filter {
+    filter (o : Object): Bool {
+        case o of
+            prod : Product => true;
+            obj : Object => false;
+        esac
+    };
+};
+
+class RankFilter inherits Filter {
+    filter (o : Object): Bool {
+        case o of
+            rank : Rank => true;
+            obj : Object => false;
+        esac
+    };
+};
+
+class SamePriceFilter inherits Filter {
+    filter (o : Object): Bool {
+        if new ProductFilter.filter(o) then
+            case o of
+                prod : Product => prod@Product.getprice() = prod.getprice();
+            esac
+        else
+            false
+        fi         
+    };
+};
 
 class Utils {
 

@@ -9,6 +9,35 @@ class Filter {
 
 (* TODO: implement specified comparators and filters*)
 
+class ProductFilter inherits Filter {
+    filter (o : Object): Bool {
+        case o of
+            prod : Product => true;
+            obj : Object => false;
+        esac
+    };
+};
+
+class RankFilter inherits Filter {
+    filter (o : Object): Bool {
+        case o of
+            rank : Rank => true;
+            obj : Object => false;
+        esac
+    };
+};
+
+class SamePriceFilter inherits Filter {
+    filter (o : Object): Bool {
+        if new ProductFilter.filter(o) then
+            case o of
+                prod : Product => prod@Product.getprice() = prod.getprice();
+            esac
+        else
+            false
+        fi         
+    };
+};
 
 class Utils {
 

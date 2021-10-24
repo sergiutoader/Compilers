@@ -85,9 +85,7 @@ class Main inherits IO{
                                         index <- index + 1;
                                         l <- lists_aux.get(index);
                                         case l of
-                                            lst : List => {
-                                                    out_string(new A2I.i2a(index).concat(": ").concat(lst.getList().toString()));        
-                                            };
+                                            lst : List => out_string(new A2I.i2a(index).concat(": ").concat(lst.getList().toString()));
                                         esac;
                                     } pool
                                 fi;
@@ -111,10 +109,25 @@ class Main inherits IO{
                                 lists.delete(index2);
                                 lists.delete(index1);
                             }
+                        else if command = "filterBy" then
+                            let index : Int, filter_str : String, filter_obj : Filter, l_i : Object in {
+                                index <- new A2I.a2i(tokenizer.next());
+                                filter_str <- tokenizer.next();
+                                if filter_str = "ProductFilter" then filter_obj <- new ProductFilter
+                                else if filter_str = "RankFilter" then filter_obj <- new RankFilter
+                                else if filter_str = "SamePriceFilter" then filter_obj <- new SamePriceFilter
+                                else abort()
+                                fi fi fi;
+
+                                l_i <- lists.getList().get(index);
+                                case l_i of
+                                    list_i : List => list_i.filterBy(filter_obj);
+                                esac; 
+                            }
                         else
                          -- TODO - implement other commands
                             ""
-                        fi fi;
+                        fi fi fi;
                     };
                 }
             fi fi;
