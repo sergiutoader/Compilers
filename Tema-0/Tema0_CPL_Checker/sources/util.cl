@@ -1,13 +1,7 @@
-(* Think of these as abstract classes *)
-class Comparator {
-    compareTo(o1 : Object, o2 : Object):Int {0};
-};
 
 class Filter {
-    filter(o : Object):Bool {true};
+    filter(o : Object):Bool {false};
 };
-
-(* TODO: implement specified comparators and filters*)
 
 class ProductFilter inherits Filter {
     filter (o : Object): Bool {
@@ -38,6 +32,27 @@ class SamePriceFilter inherits Filter {
         fi         
     };
 };
+
+
+
+class Comparator {
+    compareTo(o1 : Object, o2 : Object):Int {0};
+};
+
+class PriceComparator inherits Comparator {
+    compareTo(o1 : Object, o2 : Object) : Int {
+        case o1 of
+        p1 : Product =>
+            case o2 of
+            p2 : Product => p1.getprice() - p2.getprice();
+            obj2 : Object => { abort(); 0; };
+            esac;
+        obj1 : Object => { abort(); 0; };
+        esac
+    };
+};
+
+
 
 class Utils {
 

@@ -26,9 +26,10 @@ class List {
         self;
     }};
 
-    sortBy():SELF_TYPE {
-        self (* TODO *)
-    };
+    sortBy(comparator : Comparator):SELF_TYPE {{
+        list.sortBy(comparator);
+        self;
+    }};
 
     getList() : LinkedList {
         list
@@ -82,9 +83,9 @@ class LinkedList {
     };
 
     filterBy(filterObj : Filter) : SELF_TYPE {
-        let index : Int in {
+        let index : Int <- 1 in {
             while index <= size loop
-                if not filterObj.filter(get(index)) then
+                if not filterObj.filter(get(index)) then   
                     delete(index)
                 else
                     index <- index + 1
@@ -93,6 +94,33 @@ class LinkedList {
 
             self;
         }
+    };
+
+    sortBy(comparator : Comparator) : SELF_TYPE {
+        let n : Int <- size, m : Int <- size in {
+
+            while 0 < n loop {
+                let curr : Node <- head, aux : Object, val1 : Object, val2 : Object in
+                    while not isvoid curr.getNext() loop {
+                        val1 <- curr.getValue();
+                        val2 <- curr.getNext().getValue();
+
+                        if 0 < comparator.compareTo(val1, val2) then {
+                            aux <- val1;
+                            curr.setValue(val2);
+                            curr.getNext().setValue(val1);
+                        } else
+                            0 -- do nothing
+                        fi;
+
+                        curr <- curr.getNext();
+                    } pool;
+                n <- n - 1;
+            } pool;
+
+
+            self;
+        }    
     };
 
     -- assuming list is not empty
@@ -180,17 +208,21 @@ class LinkedList {
     };
 
     toString() : String {
-        let curr : Node <- head, result : String <- "[ " in {
-            
-            while not isvoid curr 
-            loop {
-                result <- result.concat(stringOf(curr.getValue())).concat(", ");
-                curr <- curr.getNext();
-            } pool;
+        if size = 0 then
+            "[  ]\n"
+        else
+            let curr : Node <- head, result : String <- "[ " in {
+                
+                while not isvoid curr 
+                loop {
+                    result <- result.concat(stringOf(curr.getValue())).concat(", ");
+                    curr <- curr.getNext();
+                } pool;
 
-            result <- result.substr(0, result.length() - 2); -- trim last comma and space added to the end of the string
-            result.concat(" ]\n");
-        }
+                result <- result.substr(0, result.length() - 2); -- trim last comma and space added to the end of the string
+                result.concat(" ]\n");
+            }
+        fi
     };
 
     getHead() : Node { head };

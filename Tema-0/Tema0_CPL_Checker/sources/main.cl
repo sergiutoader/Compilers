@@ -124,10 +124,25 @@ class Main inherits IO{
                                     list_i : List => list_i.filterBy(filter_obj);
                                 esac; 
                             }
+                        else if command = "sortBy" then
+                            let index : Int, comparator_str : String, comparator_obj : Comparator, order : String, l_i : Object in {
+                                index <- new A2I.a2i(tokenizer.next());
+                                comparator_str <- tokenizer.next();
+                                if comparator_str = "PriceComparator" then comparator_obj <- new PriceComparator
+                                else abort()
+                                fi;
+
+                                order <- tokenizer.next();
+
+                                l_i <- lists.getList().get(index);
+                                case l_i of
+                                    list_i : List => list_i.sortBy(comparator_obj);
+                                esac; 
+                            }
                         else
-                         -- TODO - implement other commands
-                            ""
-                        fi fi fi;
+                         -- incorrect command
+                            abort()
+                        fi fi fi fi;
                     };
                 }
             fi fi;

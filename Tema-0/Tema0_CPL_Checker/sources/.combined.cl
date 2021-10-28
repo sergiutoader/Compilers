@@ -134,9 +134,10 @@ class List {
         self;
     }};
 
-    sortBy():SELF_TYPE {
-        self (* TODO *)
-    };
+    sortBy(comparator : Comparator):SELF_TYPE {{
+        list.sortBy(comparator);
+        self;
+    }};
 
     getList() : LinkedList {
         list
@@ -190,9 +191,9 @@ class LinkedList {
     };
 
     filterBy(filterObj : Filter) : SELF_TYPE {
-        let index : Int in {
+        let index : Int <- 1 in {
             while index <= size loop
-                if not filterObj.filter(get(index)) then
+                if not filterObj.filter(get(index)) then   
                     delete(index)
                 else
                     index <- index + 1
@@ -201,6 +202,33 @@ class LinkedList {
 
             self;
         }
+    };
+
+    sortBy(comparator : Comparator) : SELF_TYPE {
+        let n : Int <- size, m : Int <- size in {
+
+            while 0 < n loop {
+                let curr : Node <- head, aux : Object, val1 : Object, val2 : Object in
+                    while not isvoid curr.getNext() loop {
+                        val1 <- curr.getValue();
+                        val2 <- curr.getNext().getValue();
+
+                        if 0 < comparator.compareTo(val1, val2) then {
+                            aux <- val1;
+                            curr.setValue(val2);
+                            curr.getNext().setValue(val1);
+                        } else
+                            0 -- do nothing
+                        fi;
+
+                        curr <- curr.getNext();
+                    } pool;
+                n <- n - 1;
+            } pool;
+
+
+            self;
+        }    
     };
 
     -- assuming list is not empty
@@ -262,18 +290,18 @@ class LinkedList {
         }
     };
 
-    set(index : Int, value : Object) : SELF_TYPE {
-        let curr : Node <- head in {
-            while 1 < index loop {
-                index <- index - 1;
-                curr <- curr.getNext();
-            } pool;
+    -- set(index : Int, value : Object) : SELF_TYPE {
+    --     let curr : Node <- head in {
+    --         while 1 < index loop {
+    --             index <- index - 1;
+    --             curr <- curr.getNext();
+    --         } pool;
 
-            curr.setValue(value);
+    --         curr.setValue(value);
 
-            self;
-        }
-    };
+    --         self;
+    --     }
+    -- };
 
     stringOf(object : Object) : String {
         case object of
@@ -288,17 +316,21 @@ class LinkedList {
     };
 
     toString() : String {
-        let curr : Node <- head, result : String <- "[ " in {
-            
-            while not isvoid curr 
-            loop {
-                result <- result.concat(stringOf(curr.getValue())).concat(", ");
-                curr <- curr.getNext();
-            } pool;
+        if size = 0 then
+            "[  ]\n"
+        else
+            let curr : Node <- head, result : String <- "[ " in {
+                
+                while not isvoid curr 
+                loop {
+                    result <- result.concat(stringOf(curr.getValue())).concat(", ");
+                    curr <- curr.getNext();
+                } pool;
 
-            result <- result.substr(0, result.length() - 2); -- trim last comma and space added to the end of the string
-            result.concat(" ]\n");
-        }
+                result <- result.substr(0, result.length() - 2); -- trim last comma and space added to the end of the string
+                result.concat(" ]\n");
+            }
+        fi
     };
 
     getHead() : Node { head };
@@ -437,10 +469,25 @@ class Main inherits IO{
                                     list_i : List => list_i.filterBy(filter_obj);
                                 esac; 
                             }
+                        else if command = "sortBy" then
+                            let index : Int, comparator_str : String, comparator_obj : Comparator, order : String, l_i : Object in {
+                                index <- new A2I.a2i(tokenizer.next());
+                                comparator_str <- tokenizer.next();
+                                if comparator_str = "PriceComparator" then comparator_obj <- new PriceComparator
+                                else abort()
+                                fi;
+
+                                order <- tokenizer.next();
+
+                                l_i <- lists.getList().get(index);
+                                case l_i of
+                                    list_i : List => list_i.sortBy(comparator_obj);
+                                esac; 
+                            }
                         else
-                         -- TODO - implement other commands
-                            ""
-                        fi fi fi;
+                         -- incorrect command
+                            abort()
+                        fi fi fi fi;
                     };
                 }
             fi fi;
@@ -614,16 +661,10 @@ class Corporal inherits Private {};
 class Sergent inherits Corporal {};
 
 class Officer inherits Sergent {};
-(* Think of these as abstract classes *)
-class Comparator {
-    compareTo(o1 : Object, o2 : Object):Int {0};
-};
 
 class Filter {
-    filter(o : Object):Bool {true};
+    filter(o : Object):Bool {false};
 };
-
-(* TODO: implement specified comparators and filters*)
 
 class ProductFilter inherits Filter {
     filter (o : Object): Bool {
@@ -654,6 +695,27 @@ class SamePriceFilter inherits Filter {
         fi         
     };
 };
+
+
+
+class Comparator {
+    compareTo(o1 : Object, o2 : Object):Int {0};
+};
+
+class PriceComparator inherits Comparator {
+    compareTo(o1 : Object, o2 : Object) : Int {
+        case o1 of
+        p1 : Product =>
+            case o2 of
+            p2 : Product => p1.getprice() - p2.getprice();
+            obj2 : Object => { abort(); 0; };
+            esac;
+        obj1 : Object => { abort(); 0; };
+        esac
+    };
+};
+
+
 
 class Utils {
 
