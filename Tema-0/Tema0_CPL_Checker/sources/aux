@@ -134,9 +134,10 @@ class List {
         self;
     }};
 
-    sortBy():SELF_TYPE {
-        self (* TODO *)
-    };
+    sortBy(comparator : Comparator):SELF_TYPE {{
+        list.sortBy(comparator);
+        self;
+    }};
 
     getList() : LinkedList {
         list
@@ -203,6 +204,33 @@ class LinkedList {
         }
     };
 
+    sortBy(comparator : Comparator) : SELF_TYPE {
+        let n : Int <- size, m : Int <- size in {
+
+            while 0 < n loop {
+                let curr : Node <- head, aux : Object, val1 : Object, val2 : Object in
+                    while not isvoid curr.getNext() loop {
+                        val1 <- curr.getValue();
+                        val2 <- curr.getNext().getValue();
+
+                        if 0 < comparator.compareTo(val1, val2) then {
+                            aux <- val1;
+                            curr.setValue(val2);
+                            curr.getNext().setValue(val1);
+                        } else
+                            0 -- do nothing
+                        fi;
+
+                        curr <- curr.getNext();
+                    } pool;
+                n <- n - 1;
+            } pool;
+
+
+            self;
+        }    
+    };
+
     -- assuming list is not empty
     delete(index : Int) : Object {
         let prev : Node, curr : Node <- head, looping : Bool <- true in {
@@ -260,47 +288,6 @@ class LinkedList {
                 curr.getValue()
             fi;
         }
-    };
-
-    -- set(index : Int, value : Object) : SELF_TYPE {
-    --     let curr : Node <- head in {
-    --         while 1 < index loop {
-    --             index <- index - 1;
-    --             curr <- curr.getNext();
-    --         } pool;
-
-    --         curr.setValue(value);
-
-    --         self;
-    --     }
-    -- };
-
-
-    sortBy(comparator : Comparator) : SELF_TYPE {
-        let n : Int <- size, m : Int <- size in {
-
-            while 0 < n loop {
-                let curr : Node <- head, aux : Object, val1 : Object, val2 : Object in
-                    while not isvoid curr.getNext() loop {
-                        val1 <- curr.getValue();
-                        val2 <- curr.getNext().getValue();
-
-                        if comparator.compareTo(val1, val2) < 0 then {
-                            aux <- val1;
-                            curr.setValue(val2);
-                            curr.getNext().setValue(val1);
-                        } else
-                            0 -- do nothing
-                        fi;
-
-                        curr <- curr.getNext();
-                    } pool;
-                n <- n - 1;
-            } pool;
-
-
-            self;
-        }    
     };
 
     stringOf(object : Object) : String {
@@ -473,7 +460,7 @@ class Main inherits IO{
                             let index : Int, comparator_str : String, comparator_obj : Comparator, order : String, l_i : Object in {
                                 index <- new A2I.a2i(tokenizer.next());
                                 comparator_str <- tokenizer.next();
-                                if filter_str = "PriceComparator" then comparator_obj <- new PriceComparator
+                                if comparator_str = "PriceComparator" then comparator_obj <- new PriceComparator
                                 else abort()
                                 fi;
 
@@ -487,7 +474,7 @@ class Main inherits IO{
                         else
                          -- incorrect command
                             abort()
-                        fi fi fi;
+                        fi fi fi fi;
                     };
                 }
             fi fi;
@@ -713,6 +700,39 @@ class PriceComparator inherits Comparator {
         obj1 : Object => { abort(); 0; };
         esac
     };
+};
+
+class RankComparator inherits Comparator {
+    compareTo(o1 : Object, o2 : Object) : Int {
+        case o1 of
+        p1 : Private =>
+            case o2 of
+            r2 : Rank => 1;
+            obj2 : Object => { abort(); 0; };
+            esac;
+
+        c1 : Corporal =>
+            case o2 of
+            p2 : Private => ~1;
+            r2 : Rank => 1;
+            obj2 : Object => { abort(); 0; };
+            esac;
+        s1 : Sergent =>
+            case o2 of
+            p2 : Private => ~1;
+            c2 : Corporal => ~1;
+            r2 : Rank => 1;
+            obj2 : Object => { abort(); 0; };
+            esac;
+        of1 : Officer =>
+            case o2 of
+            r2 : Rank => ~1;
+            obj2 : Object => { abort(); 0; };
+            esac;
+        obj1 : Object => { abort(); 0; };
+    };
+
+
 };
 
 

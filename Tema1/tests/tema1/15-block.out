@@ -1,0 +1,6 @@
+"15-block.cl", line 3:9, Syntax error: extraneous input '{' expecting {STRING, TRUE, FALSE, INT, OBJECT_ID}
+"15-block.cl", line 4:15, Syntax error: mismatched input '<-' expecting '}'
+"15-block.cl", line 5:13, Syntax error: extraneous input 'Done!' expecting {'}', OBJECT_ID}
+"15-block.cl", line 7:5, Syntax error: extraneous input '}' expecting ';'
+"15-block.cl", line 8:1, Syntax error: extraneous input '}' expecting {<EOF>, CLASS}
+Compilation halted

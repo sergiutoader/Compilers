@@ -1,0 +1,4 @@
+"10-dispatch.cl", line 3:10, Syntax error: mismatched input '(' expecting '}'
+"10-dispatch.cl", line 7:9, Syntax error: mismatched input 'self' expecting {STRING, TRUE, FALSE, INT, OBJECT_ID}
+"10-dispatch.cl", line 11:9, Syntax error: mismatched input 'new' expecting {STRING, TRUE, FALSE, INT, OBJECT_ID}
+Compilation halted

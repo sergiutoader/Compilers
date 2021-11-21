@@ -134,8 +134,8 @@ class List {
         self;
     }};
 
-    sortBy(comparator : Comparator):SELF_TYPE {{
-        list.sortBy(comparator);
+    sortBy(comparator : Comparator, ascending : Bool):SELF_TYPE {{
+        list.sortBy(comparator, ascending);
         self;
     }};
 
@@ -204,8 +204,10 @@ class LinkedList {
         }
     };
 
-    sortBy(comparator : Comparator) : SELF_TYPE {
-        let n : Int <- size, m : Int <- size in {
+    sortBy(comparator : Comparator, ascending : Bool) : SELF_TYPE {
+        let n : Int <- size, m : Int <- size, sign : Int in {
+
+            if ascending then sign <- 1 else sign <- ~1 fi;
 
             while 0 < n loop {
                 let curr : Node <- head, aux : Object, val1 : Object, val2 : Object in
@@ -213,7 +215,7 @@ class LinkedList {
                         val1 <- curr.getValue();
                         val2 <- curr.getNext().getValue();
 
-                        if 0 < comparator.compareTo(val1, val2) then {
+                        if 0 < sign * comparator.compareTo(val1, val2) then {
                             aux <- val1;
                             curr.setValue(val2);
                             curr.getNext().setValue(val1);
@@ -289,19 +291,6 @@ class LinkedList {
             fi;
         }
     };
-
-    -- set(index : Int, value : Object) : SELF_TYPE {
-    --     let curr : Node <- head in {
-    --         while 1 < index loop {
-    --             index <- index - 1;
-    --             curr <- curr.getNext();
-    --         } pool;
-
-    --         curr.setValue(value);
-
-    --         self;
-    --     }
-    -- };
 
     stringOf(object : Object) : String {
         case object of
@@ -474,15 +463,26 @@ class Main inherits IO{
                                 index <- new A2I.a2i(tokenizer.next());
                                 comparator_str <- tokenizer.next();
                                 if comparator_str = "PriceComparator" then comparator_obj <- new PriceComparator
+                                else if comparator_str = "RankComparator" then comparator_obj <- new RankComparator
                                 else abort()
-                                fi;
+                                fi fi;
 
                                 order <- tokenizer.next();
 
-                                l_i <- lists.getList().get(index);
+                                if not order = "ascendent" then
+                                    if not order = "descendent" then
+                                        abort()
+                                    else
+                                        0 -- Do nothing
+                                    fi
+                                else
+                                    0 -- Do nothing
+                                fi;
+
+                                 l_i <- lists.getList().get(index);
                                 case l_i of
-                                    list_i : List => list_i.sortBy(comparator_obj);
-                                esac; 
+                                    list_i : List => list_i.sortBy(comparator_obj, order="ascendent");
+                                esac;
                             }
                         else
                          -- incorrect command
@@ -652,15 +652,25 @@ class Rank {
             .concat(name)
             .concat(")")
     };
+
+    getRankScore() : Int { 0 };
 };
 
-class Private inherits Rank {};
+class Private inherits Rank {
+    getRankScore() : Int { 40 };
+};
 
-class Corporal inherits Private {};
+class Corporal inherits Private {
+    getRankScore() : Int { 30 };
+};
 
-class Sergent inherits Corporal {};
+class Sergent inherits Corporal {
+    getRankScore() : Int { 20 };
+};
 
-class Officer inherits Sergent {};
+class Officer inherits Sergent {
+    getRankScore() : Int { 10 };
+};
 
 class Filter {
     filter(o : Object):Bool {false};
@@ -708,6 +718,19 @@ class PriceComparator inherits Comparator {
         p1 : Product =>
             case o2 of
             p2 : Product => p1.getprice() - p2.getprice();
+            obj2 : Object => { abort(); 0; };
+            esac;
+        obj1 : Object => { abort(); 0; };
+        esac
+    };
+};
+
+class RankComparator inherits Comparator {
+    compareTo(o1 : Object, o2 : Object) : Int {
+       case o1 of
+        r1 : Rank =>
+            case o2 of
+            r2 : Rank => r2.getRankScore() - r1.getRankScore();
             obj2 : Object => { abort(); 0; };
             esac;
         obj1 : Object => { abort(); 0; };

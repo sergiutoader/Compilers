@@ -64,12 +64,22 @@ class Rank {
             .concat(name)
             .concat(")")
     };
+
+    getRankScore() : Int { 0 };
 };
 
-class Private inherits Rank {};
+class Private inherits Rank {
+    getRankScore() : Int { 40 };
+};
 
-class Corporal inherits Private {};
+class Corporal inherits Private {
+    getRankScore() : Int { 30 };
+};
 
-class Sergent inherits Corporal {};
+class Sergent inherits Corporal {
+    getRankScore() : Int { 20 };
+};
 
-class Officer inherits Sergent {};
+class Officer inherits Sergent {
+    getRankScore() : Int { 10 };
+};

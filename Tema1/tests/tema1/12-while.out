@@ -1,0 +1,3 @@
+"12-while.cl", line 3:9, Syntax error: extraneous input 'while' expecting {STRING, TRUE, FALSE, INT, OBJECT_ID}
+"12-while.cl", line 3:17, Syntax error: mismatched input '<' expecting '}'
+Compilation halted

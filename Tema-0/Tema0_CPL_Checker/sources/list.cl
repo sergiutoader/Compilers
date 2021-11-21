@@ -1,3 +1,21 @@
+(*
+    In this file, you can find the implementation of lists used for this program.
+    There are 3 classes:
+
+    List - provides the API for the main commands (merge, filterBy, sortBy, toString)
+    and other methods (add, delete, getList).
+    It contains a LinkedList object which is a generic linked list.
+
+    LinkedList - implements the operations provided by the API. It contains a
+    head field for the head of the list and a size field for the number of elements
+    in the list.
+
+    Node - class for a Node in the linked list. Contains fields for the value of the
+    node and a reference to the next node in the list. A void node marks the end of
+    the list.
+
+*)
+
 class List {
     list : LinkedList <- new LinkedList;
 
@@ -26,8 +44,8 @@ class List {
         self;
     }};
 
-    sortBy(comparator : Comparator):SELF_TYPE {{
-        list.sortBy(comparator);
+    sortBy(comparator : Comparator, ascending : Bool):SELF_TYPE {{
+        list.sortBy(comparator, ascending);
         self;
     }};
 
@@ -55,14 +73,15 @@ class Node {
 
 
 class LinkedList {
-    head : Node; -- Head of list
+    head : Node; -- head of list
     size : Int; -- number of elements in list
 
     cons(value : Object) : SELF_TYPE {
-        let newNode : Node <- new Node, last : Node in
-        {
+        let newNode : Node <- new Node, last : Node in {
+            -- creates a new node
             newNode.init(value);
 
+            -- place node at the end of the list
             if isvoid head then
                 head <- newNode
             else
@@ -84,6 +103,7 @@ class LinkedList {
 
     filterBy(filterObj : Filter) : SELF_TYPE {
         let index : Int <- 1 in {
+            -- delete all nodes filtered by the filter object
             while index <= size loop
                 if not filterObj.filter(get(index)) then   
                     delete(index)
@@ -96,19 +116,29 @@ class LinkedList {
         }
     };
 
-    sortBy(comparator : Comparator) : SELF_TYPE {
-        let n : Int <- size, m : Int <- size in {
+    sortBy(comparator : Comparator, ascending : Bool) : SELF_TYPE {
+        let n : Int <- size, m : Int <- size, sign : Int in {
 
+            -- bubble sort implementation, N iterations over the list
             while 0 < n loop {
-                let curr : Node <- head, aux : Object, val1 : Object, val2 : Object in
+                let curr : Node <- head, aux : Object, val1 : Object, val2 : Object, compareValue : Int in
                     while not isvoid curr.getNext() loop {
+                        -- get current value and next value in the list
                         val1 <- curr.getValue();
                         val2 <- curr.getNext().getValue();
 
-                        if 0 < comparator.compareTo(val1, val2) then {
+                        -- compare the two values
+                        if ascending then
+                            compareValue <- comparator.compareTo(val1, val2)
+                        else
+                            compareValue <- comparator.compareTo(val2, val1)
+                        fi;
+
+                        -- swap if compareValue is greater than 0
+                        if 0 < compareValue then {
                             aux <- val1;
                             curr.setValue(val2);
-                            curr.getNext().setValue(val1);
+                            curr.getNext().setValue(aux);
                         } else
                             0 -- do nothing
                         fi;
@@ -123,13 +153,14 @@ class LinkedList {
         }    
     };
 
-    -- assuming list is not empty
     delete(index : Int) : Object {
         let prev : Node, curr : Node <- head, looping : Bool <- true in {
-
+            -- if index is 1, just move head pointer to next element
             if index = 1 then
                 head <- head.getNext()
             else
+                -- decrement index until it has the value of 1, then make previous node to
+                -- point to the next one
                 while looping loop
                     if isvoid curr then
                         looping <- false
@@ -145,11 +176,12 @@ class LinkedList {
                     fi
                 pool
             fi;
-
+            -- decrement size
             size <- size - 1;
         }
     };
 
+    -- make the last node in the first list to point to first node in the second list
     merge(other : LinkedList) : SELF_TYPE {
         let curr : Node <- head in {
             while not isvoid curr.getNext() loop
@@ -162,6 +194,7 @@ class LinkedList {
         }
     };
 
+    -- go to index position in the list and return the value of that node
     get(index : Int) : Object {
         let curr : Node <- head, result : Object in {
             
@@ -182,19 +215,7 @@ class LinkedList {
         }
     };
 
-    -- set(index : Int, value : Object) : SELF_TYPE {
-    --     let curr : Node <- head in {
-    --         while 1 < index loop {
-    --             index <- index - 1;
-    --             curr <- curr.getNext();
-    --         } pool;
-
-    --         curr.setValue(value);
-
-    --         self;
-    --     }
-    -- };
-
+    -- convert any object to its respective string
     stringOf(object : Object) : String {
         case object of
             p : Product => p.toString();
@@ -207,6 +228,7 @@ class LinkedList {
         esac
     };
 
+    -- appends all toString() results into a single string
     toString() : String {
         if size = 0 then
             "[  ]\n"

@@ -1,0 +1,15 @@
+"17-big.cl", line 8:10, Syntax error: mismatched input ':' expecting '('
+"17-big.cl", line 9:10, Syntax error: mismatched input ':' expecting '('
+"17-big.cl", line 12:9, Syntax error: extraneous input '{' expecting {STRING, TRUE, FALSE, INT, OBJECT_ID}
+"17-big.cl", line 13:18, Syntax error: mismatched input '<-' expecting '}'
+"17-big.cl", line 14:18, Syntax error: mismatched input '<-' expecting '('
+"17-big.cl", line 15:13, Syntax error: extraneous input 'self' expecting {'}', OBJECT_ID}
+"17-big.cl", line 17:5, Syntax error: extraneous input '}' expecting ';'
+"17-big.cl", line 19:5, Syntax error: extraneous input 'print' expecting {<EOF>, CLASS}
+"17-big.cl", line 39:9, Syntax error: mismatched input '{' expecting {STRING, TRUE, FALSE, INT, OBJECT_ID}
+"17-big.cl", line 52:13, Syntax error: extraneous input 'let' expecting {'}', OBJECT_ID}
+"17-big.cl", line 52:19, Syntax error: mismatched input ':' expecting '('
+"17-big.cl", line 57:32, Syntax error: extraneous input 'Factorial iterativ: ' expecting {')', OBJECT_ID}
+"17-big.cl", line 57:55, Syntax error: mismatched input '.' expecting ':'
+"17-big.cl", line 60:9, Syntax error: extraneous input '}' expecting {<EOF>, CLASS}
+Compilation halted

@@ -1,0 +1,2 @@
+"09-new-isvoid.cl", line 3:9, Syntax error: mismatched input 'not' expecting {STRING, TRUE, FALSE, INT, OBJECT_ID}
+Compilation halted

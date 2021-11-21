@@ -3,6 +3,7 @@ class Filter {
     filter(o : Object):Bool {false};
 };
 
+-- implementation for filters
 class ProductFilter inherits Filter {
     filter (o : Object): Bool {
         case o of
@@ -39,6 +40,9 @@ class Comparator {
     compareTo(o1 : Object, o2 : Object):Int {0};
 };
 
+-- implementation for comparators
+
+-- price comparator returns the difference between the prices of the 2 products
 class PriceComparator inherits Comparator {
     compareTo(o1 : Object, o2 : Object) : Int {
         case o1 of
@@ -52,10 +56,40 @@ class PriceComparator inherits Comparator {
     };
 };
 
+-- rank comparator returns the difference between the values of the 2 ranks
+class RankComparator inherits Comparator {
+    compareTo(o1 : Object, o2 : Object) : Int {
+       case o1 of
+        r1 : Rank =>
+            case o2 of
+            r2 : Rank => r2.getRankScore() - r1.getRankScore();
+            obj2 : Object => { abort(); 0; };
+            esac;
+        obj1 : Object => { abort(); 0; };
+        esac
+    };
+};
+
+-- alphabetic comparator returns 1 or ~1, depending on which string is larger
+-- alphaebtically
+class AlphabeticComparator inherits Comparator {
+    compareTo(o1 : Object, o2 : Object) : Int {
+       case o1 of
+        s1 : String =>
+            case o2 of
+            s2 : String => if s2 < s1 then 1 else ~1 fi;
+            obj2 : Object => { abort(); 0; };
+            esac;
+        obj1 : Object => { abort(); 0; };
+        esac
+    };
+};
 
 
+-- class containing various methods
 class Utils {
 
+    -- method that initializes the object according to its type
     initObject(object : Object, tokenizer : StringTokenizer) : Object {
         case object of
             product : Product => initProduct(product, tokenizer);
@@ -68,6 +102,7 @@ class Utils {
         esac
     };
 
+    -- returns a product object
     initProduct(product : Product, tokenizer : StringTokenizer) : Product {
         let name : String, model : String, price : Int in
         {
@@ -79,6 +114,7 @@ class Utils {
         }
     };
 
+    -- returns a rank object
     initRank(rank : Rank, tokenizer : StringTokenizer) : Rank {
         let name : String in
         {
@@ -87,22 +123,27 @@ class Utils {
         }
     };
 
+    -- converts string to int
     initInt(tokenizer : StringTokenizer) : Int {
         new A2I.a2i(tokenizer.next())
     };
 
+    -- converts string to bool
     initBool(tokenizer : StringTokenizer) : Bool {
         tokenizer.next() = "true"
     };
 
+    -- retuns the parsed string
     initString(tokenizer : StringTokenizer) : String {
         tokenizer.next()
     };
 
+    -- returns a Int object string
     intToString(i : Int) : String {
         "Int(".concat(new A2I.i2a(i)).concat(")")
     };
 
+    -- retuns a Bool object string
     boolToString(b : Bool) : String {
         let result : String in {
             result <- "Bool(";

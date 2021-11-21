@@ -1,0 +1,7 @@
+"14-case.cl", line 3:9, Syntax error: extraneous input 'case' expecting {STRING, TRUE, FALSE, INT, OBJECT_ID}
+"14-case.cl", line 3:16, Syntax error: mismatched input 'of' expecting '}'
+"14-case.cl", line 5:15, Syntax error: mismatched input ':' expecting '('
+"14-case.cl", line 6:15, Syntax error: mismatched input ':' expecting '('
+"14-case.cl", line 7:9, Syntax error: extraneous input 'esac' expecting {'}', OBJECT_ID}
+"14-case.cl", line 9:1, Syntax error: extraneous input '}' expecting {<EOF>, CLASS}
+Compilation halted

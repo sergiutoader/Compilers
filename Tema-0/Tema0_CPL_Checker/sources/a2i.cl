@@ -23,7 +23,7 @@ class A2I {
         if char = "7" then 7 else
         if char = "8" then 8 else
         if char = "9" then 9 else
-        { abort(); 0; }  -- the 0 is needed to satisfy the typchecker
+        { abort(); 0; }  -- the 0 is needed to satisfy the typechecker
         fi fi fi fi fi fi fi fi fi fi
      };
 

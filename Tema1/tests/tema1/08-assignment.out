@@ -1,0 +1,4 @@
+"08-assignment.cl", line 2:7, Syntax error: mismatched input ':' expecting '('
+"08-assignment.cl", line 5:11, Syntax error: mismatched input '<-' expecting '}'
+"08-assignment.cl", line 9:11, Syntax error: mismatched input '<-' expecting '}'
+Compilation halted

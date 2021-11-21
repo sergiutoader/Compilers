@@ -1,0 +1,4 @@
+"18-error-string.cl", line 2:10, Syntax error: mismatched input ':' expecting '('
+"18-error-string.cl", line 3:10, Syntax error: mismatched input ':' expecting '('
+"18-error-string.cl", line 4:18, Syntax error: mismatched input ':' expecting '('
+Compilation halted
