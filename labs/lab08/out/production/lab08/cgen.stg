@@ -1,0 +1,102 @@
+sequence(e) ::= "<e; separator=\"\n\">"
+sequenceSpaced(e) ::= "<e; separator=\"\n\n\">"
+
+program(data, textFuncs, textMain) ::= <<
+.data
+<data>
+
+.text
+<textFuncs>
+
+main:
+<textMain>
+	li $v0, 10	
+	syscall		#exit
+>>
+
+intDecl(id) ::= <<
+<id>:
+    .word 0
+>>
+
+boolDecl(id) ::= <<
+<id>:
+    .word 0
+>>
+
+floatDecl(id) ::= <<
+<id>:
+    .float 0.0
+>>
+
+literal(value) ::= <<
+	li $a0 <value>
+>>
+
+literal_float(int_val, dec_val, dStr) ::= <<
+    li $a0, <int_val>
+    li $s <dec_val>     <if(dStr)># <dStr><else><endif>
+>>
+
+literal_true() ::= <<
+    li $a0 1
+>>
+
+literal_false() ::= <<
+    li $a0 0
+>>
+
+
+uminus(e, dStr) ::= <<
+<e>
+    li $t1 0
+    add $a0 $t1 $a0     <if(dStr)># <dStr><else><endif>
+>>
+
+arithmetic(e1, e2, op, dStr) ::= <<
+<e1>
+	sw $a0 0($sp)
+	addiu $sp $sp -4
+<e2>
+	lw $t1 4($sp)
+	<op>
+	addiu $sp $sp 4		<if(dStr)># <dStr><else><endif>
+>>
+
+plus(e1, e2, dStr) ::= <<
+<e1>
+    sw $a0 0($sp)
+    addiu $sp $sp -4
+<e2>
+    lw $t1 4($sp)
+    add $a0 $t1 $a0
+    addiu $sp $sp 4     <if(dStr)># <dStr><else><endif>6
+
+>>
+
+minus(e1, e2, dStr) ::= <<
+<e1>
+	sw $a0 0($sp)
+	addiu $sp $sp -4
+<e2>
+	lw $t1 4($sp)
+	sub $a0 $t1 $a0
+	addiu $sp $sp 4		<if(dStr)># <dStr><else><endif>
+>>
+
+conditional(cond, exprThen, exprElse, idx, dStr) ::= <<
+<cond>
+    li $ti 1
+    beq $a0 $t1 true_branch_<idx>
+false_branch_<idx>:
+<exprElse>
+    b end_if_<idx>
+true_branch_<idx>:
+<exprThen>
+end_if_<idx>:           <if(dStr)># <dStr><else><endif>
+>>
+
+assign(id, e, dStr) ::= <<
+<e>
+sw $a0, <id>        <if(dStr)># <dStr><else><endif>
+>>

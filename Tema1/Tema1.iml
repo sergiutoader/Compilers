@@ -7,19 +7,10 @@
     </content>
     <orderEntry type="jdk" jdkName="17" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../antlr-4.8-complete.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$USER_HOME$/Lexer-skel/lib/antlr-4.9.2-complete.jar!/" />
+          <root url="jar://$MODULE_DIR$/../antlr-4.8-complete.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

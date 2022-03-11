@@ -1,0 +1,10 @@
+"20-basic-classes.cl", line 1:18, Semantic error: Class A has undefined parent IO
+"20-basic-classes.cl", line 2:16, Semantic error: Undefined identifier abort()
+"20-basic-classes.cl", line 3:19, Semantic error: Undefined identifier type_name()
+"20-basic-classes.cl", line 4:16, Semantic error: Undefined identifier self.copy().copy().copy()
+"20-basic-classes.cl", line 6:20, Semantic error: Undefined identifier out_string(a).out_int(3).in_string()
+"20-basic-classes.cl", line 7:20, Semantic error: Undefined identifier out_string(a).out_int(3).in_int()
+"20-basic-classes.cl", line 9:17, Semantic error: Undefined identifier s1.length()
+"20-basic-classes.cl", line 10:20, Semantic error: Undefined identifier s1.concat(s2)
+"20-basic-classes.cl", line 11:20, Semantic error: Undefined identifier s1.substr(x,s3)
+Compilation halted

@@ -9,43 +9,49 @@ options {
 }
 
 program
-    :   (classs SEMICOLON)+ EOF
+    :   (classes+=classs SEMICOLON)+ EOF
     ; 
 
-classs : CLASS name=TYPE_ID (INHERITS parent_name=TYPE_ID)?
+classs : CLASS name=TYPE (INHERITS parent_name=TYPE)?
     LBRACE
-        (feature SEMICOLON)*
+        (features+=feature SEMICOLON)*
     RBRACE;
 
-feature : OBJECT_ID LPAREN (formals+=formal (COMMA formals+=formal)*)? RPAREN COLON TYPE_ID
+feature : name=OBJECT_ID LPAREN (formals+=formal (COMMA formals+=formal)*)? RPAREN COLON type=TYPE
     LBRACE
-        expr
-    RBRACE;
+        body=expr
+    RBRACE                                                                                      # method
+    |
+    name=OBJECT_ID COLON type=TYPE (ASSIGN e=expr)?                                             # attribute;
 
-formal : OBJECT_ID COLON TYPE_ID;
+formal : id=OBJECT_ID COLON type=TYPE;
+local : id=OBJECT_ID COLON type=TYPE (ASSIGN expr)?;
+case_branch : id=OBJECT_ID COLON type=TYPE ARROW e=expr;
 
 expr :
-    OBJECT_ID ASSIGN expr                                                                       # assignment
-    | expr (ATSIGN TYPE_ID)? DOT OBJECT_ID
+    object=expr (ATSIGN type=TYPE)? DOT funcName=OBJECT_ID
         LPAREN
             (formal_params+=expr (COMMA formal_params+=expr) *)?
         RPAREN                                                                                  # specified_dispatch
-    | OBJECT_ID
+    | funcName=OBJECT_ID
          LPAREN
             (formal_params+=expr (COMMA formal_params+=expr) *)?
          RPAREN                                                                                 # unspecified_dispatch
     | IF cond=expr THEN thenBranch=expr ELSE elseBranch=expr FI                                 # if
     | WHILE cond=expr LOOP body=expr POOL                                                       # while
-    | LBRACE (subexpr+=expr COMMA)+ RBRACE                                                      # block
-    | LET OBJECT_ID COLON TYPE_ID (ASSIGN expressions+=expr)? (COMMA OBJECT_ID COLON TYPE_ID (ASSIGN expressions+=expr)?)* IN body=expr # let
-    | CASE ref_expr=expr OF (OBJECT_ID COLON TYPE_ID ARROW case_expr+=expr COMMA)+ ESAC         # case
-    | NEW TYPE_ID                                                                               # new
+    | LBRACE (subexpr+=expr SEMICOLON)+ RBRACE                                                  # block
+    | LET local
+        (COMMA local)* IN body=expr                                                             # let
+    | CASE ref_expr=expr OF (case_branches+=case_branch SEMICOLON)+ ESAC                        # case
+    | NEW id=TYPE                                                                               # new
     | ISVOID e=expr                                                                             # isvoid
-    | left=expr (PLUS | MINUS | STAR | SLASH) right=expr                                        # arithmetic
-    | TILDE expr                                                                                # negative
-    | left=expr (LT | LE | EQUALS) right=expr                                                   # relational
-    | NOT e=expr                                                                                # not
     | LPAREN e=expr RPAREN                                                                      # paren
+    | TILDE expr                                                                                # negative
+    | left=expr operation=(STAR | SLASH) right=expr                                             # multDiv
+    | left=expr operation=(PLUS | MINUS) right=expr                                             # plusMinus
+    | left=expr operation=(LT | LE | EQUALS) right=expr                                         # relational
+    | NOT e=expr                                                                                # not
+    | id=OBJECT_ID ASSIGN e=expr                                                                # assignment
     | OBJECT_ID                                                                                 # id
     | INT                                                                                       # int
     | STRING                                                                                    # string

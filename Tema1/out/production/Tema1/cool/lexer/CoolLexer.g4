@@ -14,62 +14,61 @@ tokens { ERROR }
 
     private void getString() {
         String oldText = getText();
-        // Remove double quotes
+
         String newText = oldText.substring(1, oldText.length() - 1);
 
-        for (int i = 1; i < newText.length(); i++) {
-            if (newText.charAt(i) == '\n' && newText.charAt(i - 1) != '\\') {
-                raiseError("Unterminated string constant");
-                return;
+        newText = newText.replace("\\\r\n", "\r\n")
+                        .replace("\\n", "\n")
+                        .replace("\\t", "\t")
+                        .replace("\\b", "\b")
+                        .replace("\\f", "\f");
+
+        for(int i = 0; i < newText.length() - 1;) {
+            if(newText.charAt(i) == '\\' && newText.charAt(i+1) != '\\') {
+                newText = newText.substring(0, i) + newText.substring(i+1);
+            } else {
+                i++;
             }
         }
 
-        newText.replaceAll("\\n", "\n");
-        newText.replaceAll("\\t", "\t");
-        newText.replaceAll("\\b", "\b");
-        newText.replaceAll("\\f", "\f");
-
-        // replace backslash
-        newText.replaceAll("\\\\", "");
-
+        newText = newText.replace("\\\\", "\\");
 
         if (newText.length() > 1024) {
             raiseError("String constant too long");
-            return;
-        }
-
-         // Check if string contains null character
-        if (newText.contains("\u0000")) {
+        } else if (newText.contains("\u0000")) {
             raiseError("String contains null character");
-            return;
+        } else {
+         setText(newText);
         }
-
-        setText(newText);
     }
 }
 
-STRING : '"' (.)*?
-    ('"' { getString(); }
-    |
-    EOF {  raiseError("EOF in string constant"); }
-    );
-
 fragment NEW_LINE : '\r'? '\n';
+
+STRING : '"' ('\\' NEW_LINE | .)*?
+        (
+          '"' { getString(); }
+        | NEW_LINE { raiseError("Unterminated string constant"); }
+        | EOF { raiseError("EOF in string constant"); }
+
+        );
+
+
 LINE_COMMENT
     : '--' .*? (NEW_LINE | EOF) -> skip
     ;
 BLOCK_COMMENT
     : '(*'
       (BLOCK_COMMENT | .)*?
-      '*)' { skip(); } | EOF { raiseError("EOF in comment"); }
+      ('*)' { skip(); } | EOF { raiseError("EOF in comment"); })
     ;
 
 UNMATCHED_COMMENT_END : '*)' { raiseError("Unmatched *)"); };
 
 
 // self and SELF_TYPE
-SELF : 'self';
-SELF_TYPE : 'SELF_TYPE';
+fragment SELF : 'self';
+fragment SELF_TYPE : 'SELF_TYPE';
 
 // keywords
 CLASS : ('c' | 'C')('l' | 'L')('a' | 'A')('s' | 'S')('s' | 'S');
@@ -123,8 +122,9 @@ INT : DIGIT+;
 fragment LOWERCASE_LETTER : [a-z];
 fragment UPPERCASE_LETTER : [A-Z];
 fragment LETTER : (LOWERCASE_LETTER | UPPERCASE_LETTER);
-TYPE_ID : UPPERCASE_LETTER(LETTER | DIGIT | '_')*;
-OBJECT_ID : LOWERCASE_LETTER(LETTER | DIGIT | '_')*;
+fragment TYPE_ID : UPPERCASE_LETTER(LETTER | DIGIT | '_')*;
+TYPE : TYPE_ID | SELF_TYPE;
+OBJECT_ID : LOWERCASE_LETTER(LETTER | DIGIT | '_')* | SELF;
 
 WS
     :   [ \n\f\r\t]+ -> skip
